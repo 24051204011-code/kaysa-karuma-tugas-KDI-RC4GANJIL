@@ -21,8 +21,10 @@ cd [NAMA-REPO]
 python demo_RC4.py
 
 3.contoh output
-<img width="1187" height="867" alt="Screenshot 2026-03-05 073559" src="https://github.com/user-attachments/assets/2bef20f5-f544-494e-a3cd-bd0048a587fa" />
-<img width="1150" height="849" alt="Screenshot 2026-03-05 073613" src="https://github.com/user-attachments/assets/ee27b634-8774-4d48-b337-bd32e8c2a5a8" />
+<img width="1183" height="800" alt="Screenshot 2026-03-05 085948" src="https://github.com/user-attachments/assets/249d5853-dcae-4a5d-b9cc-b756d7f3148c" />
+<img width="877" height="861" alt="Screenshot 2026-03-05 090115" src="https://github.com/user-attachments/assets/52d213aa-b7a1-40ad-9b3c-0ee395e25ff1" />
+
+
 
 # algoritma
 1. Input Data
@@ -69,11 +71,13 @@ Keystream:
 [104, 223, 211, 175, 119, 122, 69, 39]
 
 # Proses Enkripsi
-<img width="296" height="362" alt="Screenshot 2026-03-05 022119" src="https://github.com/user-attachments/assets/c18fdc91-ee73-46cf-82f1-518e3ce23b45" />
+<img width="308" height="571" alt="Screenshot 2026-03-05 085517" src="https://github.com/user-attachments/assets/d989086f-2206-4944-b81f-fb27a698fc3a" />
+<img width="354" height="591" alt="Screenshot 2026-03-05 085435" src="https://github.com/user-attachments/assets/31b34dc0-e762-4872-8b5c-b73a6fcbe78d" />
+
 
 ciphertax
 
-8D57FB776AF73993
+2CBEA7CE454A7711
 # Proses Dekripsi
 
 Salah satu kelebihan RC4 adalah proses dekripsi menggunakan operasi yang sama.
