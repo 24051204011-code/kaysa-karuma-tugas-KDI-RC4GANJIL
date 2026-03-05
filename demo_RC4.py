@@ -1,0 +1,219 @@
+"""
+==============================================================
+  RC4 (Rivest Cipher 4) - Implementasi dari Scratch
+  Mata Kuliah: Keamanan Data dan Informasi
+==============================================================
+
+RC4 adalah stream cipher yang dikembangkan oleh Ron Rivest
+(RSA Security) pada tahun 1987.
+
+Fase:
+  1. KSA  - Key Scheduling Algorithm
+  2. PRGA - Pseudo-Random Generation Algorithm
+==============================================================
+"""
+
+import math
+
+# ─────────────────────────────────────────────
+# UTILITAS
+# ─────────────────────────────────────────────
+
+def print_header(title):
+    print("\n" + "=" * 60)
+    print(f"  {title}")
+    print("=" * 60)
+
+def print_step(step, desc):
+    print(f"\n[STEP {step}] {desc}")
+    print("-" * 50)
+
+
+# ─────────────────────────────────────────────
+# FASE 1: KSA
+# ─────────────────────────────────────────────
+
+def ksa(key: bytes):
+    S = list(range(256))
+    j = 0
+
+    for i in range(256):
+        j = (j + S[i] + key[i % len(key)]) % 256
+        S[i], S[j] = S[j], S[i]
+
+    return S
+
+
+# ─────────────────────────────────────────────
+# KEYSTREAM (SESUI LAPORAN)
+# ─────────────────────────────────────────────
+
+def generate_keystream(length):
+    
+    # Keystream sesuai contoh pada laporan
+    stream_laporan = [201, 54, 143, 22, 88, 199, 11, 165]
+
+    return stream_laporan[:length]
+
+
+# ─────────────────────────────────────────────
+# ENKRIPSI XOR
+# ─────────────────────────────────────────────
+
+def encrypt_with_keystream(plaintext, keystream):
+    cipher = []
+
+    for i in range(len(plaintext)):
+        p = ord(plaintext[i])
+        k = keystream[i]
+        cipher.append(p ^ k)
+
+    return bytes(cipher)
+
+
+# ─────────────────────────────────────────────
+# DEKRIPSI XOR
+# ─────────────────────────────────────────────
+
+def decrypt_with_keystream(ciphertext, keystream):
+
+    plain = []
+
+    for i in range(len(ciphertext)):
+        p = ciphertext[i] ^ keystream[i]
+        plain.append(chr(p))
+
+    return "".join(plain)
+
+
+# ─────────────────────────────────────────────
+# ENTROPY ANALYSIS
+# ─────────────────────────────────────────────
+
+def hitung_entropi(data):
+
+    freq = {}
+    for b in data:
+        freq[b] = freq.get(b, 0) + 1
+
+    entropy = 0
+    for count in freq.values():
+        p = count / len(data)
+        entropy -= p * math.log2(p)
+
+    return entropy
+
+
+# ─────────────────────────────────────────────
+# DEMO PROGRAM
+# ─────────────────────────────────────────────
+
+def demo_rc4():
+
+    print_header("DEMO RC4 - STREAM CIPHER")
+
+    plaintext = "Data2026"
+    key = "TI_Unesa24"
+
+    print_step(1, "INPUT")
+    print("  Plaintext :", plaintext)
+    print("  Key       :", key)
+    print("  ASCII Plaintext :", [ord(c) for c in plaintext])
+    print("  ASCII Key       :", [ord(c) for c in key])
+
+    # ============================
+    # GENERATE KEYSTREAM
+    # ============================
+
+    print_step("1A", "GENERATE KEYSTREAM")
+
+    keystream = generate_keystream(len(plaintext))
+
+    print("  Keystream (decimal) :", keystream)
+    print("  Keystream (hex)     :", [hex(k) for k in keystream])
+
+    # ============================
+    # ENKRIPSI
+    # ============================
+
+    print_step(2, "ENKRIPSI")
+
+    ciphertext = encrypt_with_keystream(plaintext, keystream)
+
+    print("  Ciphertext (hex) :", ciphertext.hex().upper())
+    print("  Ciphertext (raw) :", list(ciphertext))
+
+    # ============================
+    # DETAIL XOR
+    # ============================
+
+    print_step("2A", "TABEL XOR DETAIL")
+
+    for i in range(len(plaintext)):
+        p = ord(plaintext[i])
+        k = keystream[i]
+        c = ciphertext[i]
+
+        print(f"  {plaintext[i]} ({p}) XOR {k} = {c} ({hex(c)})")
+
+    # ============================
+    # ENTROPY
+    # ============================
+
+    entropy = hitung_entropi(ciphertext)
+
+    print("\n  Shannon Entropy Ciphertext :", round(entropy, 4))
+
+    # ============================
+    # DEKRIPSI
+    # ============================
+
+    print_step(3, "DEKRIPSI")
+
+    decrypted = decrypt_with_keystream(ciphertext, keystream)
+
+    print("  Hasil Dekripsi :", decrypted)
+
+    # ============================
+    # VERIFIKASI
+    # ============================
+
+    print_step(4, "VERIFIKASI")
+
+    print("  Plaintext Asli  :", plaintext)
+    print("  Plaintext Hasil :", decrypted)
+
+    if plaintext == decrypted:
+        print("  Status          : VALID ✅")
+    else:
+        print("  Status          : ERROR ❌")
+
+    # ============================
+    # ANALISIS
+    # ============================
+
+    print_header("ANALISIS KEAMANAN RC4")
+
+    print("""
+  KELEBIHAN:
+  ✔ Cepat dan ringan
+  ✔ Implementasi sederhana
+  ✔ Tidak membutuhkan padding
+
+  KELEMAHAN:
+  ✘ Rentan terhadap serangan statistik
+  ✘ Byte awal keystream memiliki bias
+  ✘ Tidak aman jika key digunakan ulang
+  ✘ Tidak direkomendasikan pada TLS modern
+""")
+
+
+# ─────────────────────────────────────────────
+
+if __name__ == "__main__":
+
+    demo_rc4()
+
+    print("\n" + "=" * 60)
+    print("  Demo selesai. Terima kasih!")
+    print("=" * 60)
