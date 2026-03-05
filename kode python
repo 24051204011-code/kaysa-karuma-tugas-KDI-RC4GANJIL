@@ -45,15 +45,28 @@ def ksa(key: bytes):
 
 
 # ─────────────────────────────────────────────
-# KEYSTREAM (SESUI LAPORAN)
+# FASE 2: PRGA (GENERATE KEYSTREAM)
 # ─────────────────────────────────────────────
 
-def generate_keystream(length):
-    
-    # Keystream sesuai contoh pada laporan
-    stream_laporan = [201, 54, 143, 22, 88, 199, 11, 165]
+def prga(S, length):
 
-    return stream_laporan[:length]
+    i = 0
+    j = 0
+    keystream = []
+
+    for _ in range(length):
+
+        i = (i + 1) % 256
+        j = (j + S[i]) % 256
+
+        S[i], S[j] = S[j], S[i]
+
+        t = (S[i] + S[j]) % 256
+        K = S[t]
+
+        keystream.append(K)
+
+    return keystream
 
 
 # ─────────────────────────────────────────────
@@ -61,6 +74,7 @@ def generate_keystream(length):
 # ─────────────────────────────────────────────
 
 def encrypt_with_keystream(plaintext, keystream):
+
     cipher = []
 
     for i in range(len(plaintext)):
@@ -93,10 +107,12 @@ def decrypt_with_keystream(ciphertext, keystream):
 def hitung_entropi(data):
 
     freq = {}
+
     for b in data:
         freq[b] = freq.get(b, 0) + 1
 
     entropy = 0
+
     for count in freq.values():
         p = count / len(data)
         entropy -= p * math.log2(p)
@@ -122,12 +138,18 @@ def demo_rc4():
     print("  ASCII Key       :", [ord(c) for c in key])
 
     # ============================
-    # GENERATE KEYSTREAM
+    # KSA
+    # ============================
+
+    S = ksa(key.encode())
+
+    # ============================
+    # PRGA
     # ============================
 
     print_step("1A", "GENERATE KEYSTREAM")
 
-    keystream = generate_keystream(len(plaintext))
+    keystream = prga(S, len(plaintext))
 
     print("  Keystream (decimal) :", keystream)
     print("  Keystream (hex)     :", [hex(k) for k in keystream])
